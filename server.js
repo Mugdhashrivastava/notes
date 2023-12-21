@@ -8,14 +8,26 @@ const port = 8001;
 
 app.use(cors());
 app.use(bodyParser.json());
-
-app.get('/read-json	', (req, res) => {
-	res.send('Server is on time high');
+const filePath = './Data.json';
+app.get('/read-json', (req, res) => {
+	try{
+	const fielData= fs.readFile('./Data.json', 'utf8',(readFile,readData)=>{
+		console.log(readData,'readData')
+		console.log(readFile,'readFile')
+		res.status(200).send(readData)
+	
+	});
+}catch(err){
+	
+	res.status(500).send(err);
+}
 });
 
 app.post('/write-json', (req, res) => {
-	const { value, modal } = req.body;
-	const filePath = './data.json';
+
+	const {modal,value} = req.body;
+	
+	const filePath = './Data.json';
 
 	fs.readFile(filePath, 'utf8', (readErr, existingData) => {
 		if (readErr) {
@@ -26,11 +38,25 @@ app.post('/write-json', (req, res) => {
 
 		try {
 			const jsonData = existingData ? JSON.parse(existingData) : [];
-			const updatedData = [
-				...jsonData,
-				...(Array.isArray(modal) ? modal : []),
-				...(Array.isArray(value) ? value : [])
-			];
+			console.log(modal,'modal1234')
+
+
+
+			if (modal) {
+                
+                updatedData = jsonData.concat({ modal, value });
+            } else {
+                
+                updatedData = jsonData.concat(
+                    Array.isArray(modal) ? modal : [],
+                    Array.isArray(value) ? value : []
+                );
+            }
+			// const updatedData = jsonData.concat({ modal, value });
+			// const updatedData = jsonData.concat((Array.isArray(modal) ? modal : []), (Array.isArray(value) ? value : []));
+
+
+		
 
 			fs.writeFile(filePath, JSON.stringify(updatedData, null, 2), (writeErr) => {
 				if (writeErr) {

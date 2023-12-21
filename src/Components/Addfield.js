@@ -13,7 +13,7 @@ const Addfield = () => {
   const [storedValues, setStoredValues] = useState([]);
   const [localValues, setLocalValues] = useState([]);
   const [isTrue, setIsTrue] = useState(false);
-  const [selectedItems, setSelectedItems] = useState([]);
+  // const [selectedItems, setSelectedItems] = useState([]);
   const [data, setData] = useState([]);
 //  const [josnData,setJsonData]=useState()
 
@@ -62,7 +62,7 @@ const Addfield = () => {
       console.log(response.data, 'response data');
       setData(response.data);
     } catch (error) {
-      console.error('Error fetching data:', error.message);
+      console.error('Error fetching data:');
     }
   };
   
@@ -111,7 +111,7 @@ const updatedDataArray = [...selectedDataArray];
 	
 	
 	 setSelectedDataArray([...updatedDataArray, obj])
-	 setChangeData((prev)=>[...prev,...updatedDataArray, obj])  
+	 setChangeData([...updatedDataArray, obj])  
 
   
     try {
