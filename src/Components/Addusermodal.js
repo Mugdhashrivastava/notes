@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import styles from './Addusermodal.module.css';
 
 export default function Addusermodal({ getState }) {
-  const [userList, setUserList] = useState([]);
-// console.log(userList)
+  const [userList, setUserList] = useState({});
+ console.log(userList,'userlist......')
   const generateRandomId = () => {
     return Math.random().toString(36).substr(2, 9);
   };
@@ -14,6 +14,7 @@ export default function Addusermodal({ getState }) {
     select: '',
     id: generateRandomId(),
   });
+ 
 
   const [modalVisible, setModalVisible] = useState(true);
 
@@ -23,10 +24,11 @@ export default function Addusermodal({ getState }) {
 
   const addHandler = (event) => {
     event.preventDefault();
-    const arr = [...userList];
-    arr.push(addModalState);
-    setUserList(arr);
-    getState(arr);
+    const obj = {...addModalState};
+    // arr.push(addModalState);
+    console.log(obj,'obj.......')
+    setUserList(obj);
+    getState(obj);
     setAddModalState({
       firstname: '',
       lastname: '',

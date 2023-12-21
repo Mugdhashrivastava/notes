@@ -5,7 +5,7 @@ import styles from './Addfield.module.css';
 import Addusermodal from './Addusermodal';
 
 const Addfield = () => {
-  const [addModal, setAddModal] = useState([]);
+  const [addModal, setAddModal] = useState({});
   const [select, setSelect] = useState('');
   const [selectedDataArray, setSelectedDataArray] = useState([]);
   const [changeData, setChangeData] = useState([]);
@@ -96,6 +96,11 @@ console.log(data)
 // [{id:[]}]
 
 // [{id:{}}]
+
+const handleInputChanges = (identifier, value) => {
+  setEnteredValues({ ...enteredValues, [identifier]: value });
+};
+
   const addHandler = async (e) => {
     e.preventDefault();
 	
@@ -107,15 +112,15 @@ console.log(data)
     // setLocalValues(updatedLocalValues);
 const updatedDataArray = [...selectedDataArray];
      const obj = {[selectedId] : enteredValues}
-	 const updatedModal=[...addModal]
+	 
 	
 	
 	 setSelectedDataArray([...updatedDataArray, obj])
-	 setChangeData([...updatedDataArray, obj])  
+	 setChangeData([obj])  
 
   
     try {
-      await axios.post('http://localhost:8001/write-json',{modal: addModal, value: changeData} );
+      await axios.post('http://localhost:8001/write-json',{modal: addModal, value: [obj]} );
       console.log('Data written to file successfully');
     } catch (error) {
       console.error('Error writing to file:', error.message);
@@ -138,13 +143,11 @@ const updatedDataArray = [...selectedDataArray];
     // setSelectedItems([]);
   };
 
-  const handleInputChanges = (identifier, value) => {
-    setEnteredValues({ ...enteredValues, [identifier]: value });
-  };
+ 
 
 console.log(changeData,'changedata')
 // console.log(localValues,'check values')
-
+console.log(addModal,'addmodal/......')
   return (
     <>
       <div>
@@ -189,11 +192,11 @@ console.log(changeData,'changedata')
       </div>
       <select style={{ width: '300px' }}   onChange={selectHandler}>
 		<option>Select User</option>
-        {addModal.map((item) => (
-          <option key={item.id} value={item.id}>
-            {item.firstname + ' ' + item.lastname + ' '+item.select+ ' ' + item.id}
+     
+          <option key={addModal.id} value={addModal.id}>
+            {addModal.firstname + ' ' + addModal.lastname + ' '+addModal.select+ ' ' + addModal.id}
           </option>
-        ))}
+        
         
       </select>
     </>
