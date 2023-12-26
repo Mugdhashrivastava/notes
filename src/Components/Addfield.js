@@ -5,6 +5,7 @@ import styles from './Addfield.module.css';
 import Addusermodal from './Addusermodal';
 
 const Addfield = () => {
+  
   const [addModal, setAddModal] = useState({});
   const [select, setSelect] = useState('');
   const [selectedDataArray, setSelectedDataArray] = useState([]);
@@ -13,21 +14,30 @@ const Addfield = () => {
   const [storedValues, setStoredValues] = useState([]);
   const [localValues, setLocalValues] = useState([]);
   const [isTrue, setIsTrue] = useState(false);
-  // const [selectedItems, setSelectedItems] = useState([]);
   const [data, setData] = useState([]);
-//  const [josnData,setJsonData]=useState()
+
+const [addField, setAddField]= useState([])
+
 
   const getState = (state) => {
 	
     setAddModal(state);
   };
+  useEffect(() => {
+    if (addModal.firstname && addModal.lastname && addModal.select && addModal.id) {
+      const newarr = [...addField];
+  
+      setAddField([...newarr, {
+        firstname: addModal.firstname,
+        lastname: addModal.lastname,
+        select: addModal.select,
+        id: addModal.id
+      }]);
+    }
+  }, [addModal]);
 
   
-  
-  const selectHandler = (event) => {
-	
-    setSelect(event.target.value);
-  };
+
 
 
   const [showAddUserModal, setShowAddUserModal] = useState(false);
@@ -41,61 +51,34 @@ const Addfield = () => {
   };
 
   
-
-//   useEffect(() => {
-//     if (isTrue) {
-//       const todoData = localStorage.getItem('todo');
-//       if (todoData) {
-//         const retrievedProducts = JSON.parse(todoData);
-//         setLocalValues(retrievedProducts);
-//       }
-//     }
-//   }, [isTrue]);
-
-
-
   useEffect(() => {
-	const fetchData = async () => {
-    try {
-      const response = await axios.get('http://localhost:8001/read-json');
-      console.log(response.status, 'response status');
-      console.log(response.data, 'response data');
-      setData(response.data);
-    } catch (error) {
-      console.error('Error fetching data:');
-    }
-  };
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:8001/read-json');
+        console.log(response.status, 'response status');
+        setData(response.data);
+        setIsTrue(true); 
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
   
-	if (isTrue) {
-	  fetchData();
-	}
-
+    if (!isTrue) {
+      fetchData();
+    }
   }, [isTrue]);
-console.log(data)
+  
 
-//   useEffect(() => {
-//     const fetchAddModalData = async () => {
-//       try {
-//         const response = await axios.get(`http://localhost:8001/get-users?select=${select}`);
-//         setAddModal(response.data);
-//       } catch (error) {
-//         console.error('Error fetching addModal data:', error.message);
-//       }
-//     };
 
-//     fetchAddModalData();
-//   }, [select]);
 
+
+  console.log(data.length, 'response data-----------------------------');
+  
   useEffect(() => {
 
     setSelectedDataArray([]);
   }, [select]);
 
-
-
-// [{id:[]}]
-
-// [{id:{}}]
 
 const handleInputChanges = (identifier, value) => {
   setEnteredValues({ ...enteredValues, [identifier]: value });
@@ -106,10 +89,10 @@ const handleInputChanges = (identifier, value) => {
 	
     const selectedId = select;
 	const updatedStoredValues = [...storedValues, enteredValues];
-    // const updatedLocalValues = [...localValues];
+
 
     setStoredValues(updatedStoredValues);
-    // setLocalValues(updatedLocalValues);
+    
 const updatedDataArray = [...selectedDataArray];
      const obj = {[selectedId] : enteredValues}
 	 
@@ -125,29 +108,70 @@ const updatedDataArray = [...selectedDataArray];
     } catch (error) {
       console.error('Error writing to file:', error.message);
     }
-
-    // localStorage.setItem('todo', JSON.stringify(updatedLocalValues));
-    // setEnteredValues({ title: '', body: '' });
   };
 
-
+  
 
   const listHandler = () => {
     setIsTrue((prevIsTrue) => !prevIsTrue);
+    if (data.length > 0) {
+      const firstData = data;
+      data.map((element,index)=>{
+      
+        const { modal } = element;
+        
+ 
+        if (modal && modal.firstname && modal.lastname && modal.select && modal.id) {
+          setAddField((prevAddField) => [
+            ...prevAddField,
+            {
+              firstname: modal.firstname,
+              lastname: modal.lastname,
+              select: modal.select,
+              id: modal.id
+            }
+          ]);
+        }
+
+
+     
+      })
+      
+      
+  
+   
+    }
   };
+  
+  const selectHandler = (event) => {
+    const selectedValue = event.target.value;
+    console.log(selectedValue, 'selecteditem-----------------');
+  
+  
+    setLocalValues([]);
+  
+    if (selectedValue) {
+      data.forEach((element) => {
+        const { value } = element;
+  
+        value.forEach((item) => {
+          
+          if (item[selectedValue]) {
+            setLocalValues((prev) => [...prev, item[selectedValue]]);
+          }
+        });
+      });
+    }
+  };
+  
+  console.log(localValues,'localValues----------------')
+  console.log(storedValues,'storedValues----------------')
 
   const deleteHandler = () => {
-    // const updatedLocalValues = localValues.filter((_, index) => !selectedItems.includes(index));
-    // setLocalValues(updatedLocalValues);
-    // localStorage.setItem('todo', JSON.stringify(updatedLocalValues));
-    // setSelectedItems([]);
+   
   };
 
  
-
-console.log(changeData,'changedata')
-// console.log(localValues,'check values')
-console.log(addModal,'addmodal/......')
   return (
     <>
       <div>
@@ -188,16 +212,17 @@ console.log(addModal,'addmodal/......')
 
         {isTrue ? <button onClick={deleteHandler}>Delete</button> : null}
 
-        <Displaymodal values={isTrue ? localValues : storedValues} />
+        <Displaymodal values={isTrue ? localValues : storedValues??[]} />
       </div>
       <select style={{ width: '300px' }}   onChange={selectHandler}>
 		<option>Select User</option>
-     
-          <option key={addModal.id} value={addModal.id}>
-            {addModal.firstname + ' ' + addModal.lastname + ' '+addModal.select+ ' ' + addModal.id}
-          </option>
-        
-        
+
+    {addField.map((item,index) => {
+      return(
+          <option key={index} value={item.id}>
+            {item.firstname + ' ' + item.lastname + ' '+item.select+ ' ' + item.id}
+          </option>)
+})} 
       </select>
     </>
   );

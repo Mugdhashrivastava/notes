@@ -9,10 +9,10 @@ export default function DisplayModal({ values }) {
         setCheck(value)
     }
     if (check) {
-        console.log('check')
+      return true
     }
     if (!check) {
-        console.log('uncheck')
+       
     }
 
     return (

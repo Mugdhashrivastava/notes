@@ -25,8 +25,8 @@ export default function Addusermodal({ getState }) {
   const addHandler = (event) => {
     event.preventDefault();
     const obj = {...addModalState};
-    // arr.push(addModalState);
-    console.log(obj,'obj.......')
+
+    
     setUserList(obj);
     getState(obj);
     setAddModalState({
